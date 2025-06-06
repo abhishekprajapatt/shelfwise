@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Book - SelfWise Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: #fff;
+      color: #6b7280;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .header {
+      padding: 3rem 1rem 2rem;
+      text-align: center;
+      color: #111827;
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.02em;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #374151;
+    }
+    .form-control.is-invalid {
+      border-color: #dc2626;
+    }
+    .invalid-feedback {
+      color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+
+    <header class="header">Add New Book</header>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+    <div class="card p-4 shadow-sm rounded-3 mx-auto" style="max-width: 700px;">
+      <form th:action="@{/books/add}" th:object="${book}" method="post" novalidate>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="Enter book title" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{author}" class="form-control" id="author" placeholder="Enter author name" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Author error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="isbn" class="form-label">ISBN <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{isbn}" class="form-control" id="isbn" placeholder="Enter ISBN number" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}">ISBN error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="publicationDate" class="form-label">Publication Date</label>
+          <input type="date" th:field="*{publicationDate}" class="form-control" id="publicationDate" />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('publicationDate')}" th:errors="*{publicationDate}">Publication date error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="totalCopies" class="form-label">Total Copies <span class="text-danger">*</span></label>
+          <input type="number" min="1" th:field="*{totalCopies}" class="form-control" id="totalCopies" placeholder="Enter total number of copies" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('totalCopies')}" th:errors="*{totalCopies}">Total copies error</div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-success flex-grow-1">Add Book</button>
+          <a href="/books" class="btn btn-secondary flex-grow-1">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

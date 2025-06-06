@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Book - SelfWise Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: #fff;
+      color: #6b7280;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .header {
+      padding: 3rem 1rem 2rem;
+      text-align: center;
+      color: #111827;
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.02em;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #374151;
+    }
+    .form-control.is-invalid {
+      border-color: #dc2626;
+    }
+    .invalid-feedback {
+      color: #dc2626;
+    }
+    .alert-info {
+      font-size: 0.9rem;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+
+    <header class="header">Edit Book</header>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+    <div class="card shadow-sm rounded-3 mx-auto mb-5" style="max-width: 720px;">
+      <form th:action="@{/books/edit/{id}(id=${book.id})}" th:object="${book}" method="post" novalidate>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{title}" class="form-control" id="title" placeholder="Enter book title" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="author" class="form-label">Author <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{author}" class="form-control" id="author" placeholder="Enter author name" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Author error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="isbn" class="form-label">ISBN <span class="text-danger">*</span></label>
+          <input type="text" th:field="*{isbn}" class="form-control" id="isbn" placeholder="Enter ISBN number" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}">ISBN error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="publicationDate" class="form-label">Publication Date</label>
+          <input type="date" th:field="*{publicationDate}" class="form-control" id="publicationDate" />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('publicationDate')}" th:errors="*{publicationDate}">Publication date error</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="totalCopies" class="form-label">Total Copies <span class="text-danger">*</span></label>
+          <input type="number" min="1" th:field="*{totalCopies}" class="form-control" id="totalCopies" placeholder="Enter total number of copies" required />
+          <div class="invalid-feedback" th:if="${#fields.hasErrors('totalCopies')}" th:errors="*{totalCopies}">Total copies error</div>
+        </div>
+
+        <div class="alert alert-info">
+          <strong>Current Status:</strong><br />
+          Available Copies: <span th:text="${book.availableCopies}">0</span><br />
+          Issued Copies: <span th:text="${book.totalCopies - book.availableCopies}">0</span>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+          <button type="submit" class="btn btn-success flex-grow-1">Update Book</button>
+          <a href="/books" class="btn btn-secondary flex-grow-1">Cancel</a>
+        </div>
+      </form>
+    </div>
+    <div class="card shadow-sm rounded-3" th:if="${bookIssues != null and !bookIssues.empty}" style="max-width: 100%;">
+      <div class="card-body">
+        <h3 class="mb-4">Issue History</h3>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="text-secondary">
+              <tr>
+                <th>Student</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="issue : ${bookIssues}">
+                <td th:text="${issue.student.name}">Student Name</td>
+                <td th:text="${#temporals.format(issue.issueDate, 'dd MMM yyyy')}">01 Jan 2024</td>
+                <td th:text="${#temporals.format(issue.dueDate, 'dd MMM yyyy')}">15 Jan 2024</td>
+                <td th:text="${issue.returnDate != null ? #temporals.format(issue.returnDate, 'dd MMM yyyy') : 'Not Returned'}">N/A</td>
+                <td>
+                  <span th:class="'badge text-uppercase ' + 
+                    (issue.status == T(com.selfwise.model.Issue.IssueStatus).ISSUED ? 'bg-primary' : 
+                     (issue.status == T(com.selfwise.model.Issue.IssueStatus).RETURNED ? 'bg-success' : 'bg-danger'))"
+                    th:text="${issue.status}">Status</span>
+                </td>
+                <td th:text="${issue.fineAmount > 0 ? '₹' + issue.fineAmount : 'No Fine'}">No Fine</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <section class="mt-5 text-center" style="max-width: 700px; margin: 3rem auto;">
+      <div class="card bg-light p-4 rounded-3 shadow-sm">
+        <h4 class="text-danger fw-bold mb-3">Danger Zone</h4>
+        <p>Deleting this book will permanently remove it from the system.<br />This action cannot be undone. Make sure all copies are returned before deleting.</p>
+        <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" onsubmit="return confirm('Are you sure you want to delete this book? This action cannot be undone!')">
+          <button type="submit" class="btn btn-danger btn-lg w-100 mt-3">Delete Book</button>
+        </form>
+      </div>
+    </section>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

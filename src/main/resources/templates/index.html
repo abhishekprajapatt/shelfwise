@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SelfWise - Library Management System</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            background-color: #fff;
+            color: #6b7280;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        h1.hero-title {
+            font-weight: 800;
+            font-size: 3.5rem;
+            color: #111827;
+            line-height: 1.1;
+        }
+        h2.section-title {
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+        }
+        .navbar {
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+        }
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
+        }
+        .stat-number {
+            color: #111827;
+            font-weight: 800;
+            font-size: 2.5rem;
+            display: block;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+        }
+        .quick-action-card {
+            cursor: pointer;
+            border-top: 4px solid #111827;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .quick-action-card:hover {
+            box-shadow: 0 8px 30px rgb(0 0 0 / 0.12);
+            transform: translateY(-6px);
+        }
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.9rem;
+            border-top: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-dark" href="/">SelfWise</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav fs-6">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="/books">Books</a></li>
+        <li class="nav-item"><a class="nav-link" href="/students">Students</a></li>
+        <li class="nav-item"><a class="nav-link" href="/issues">Issues</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="py-5 mt-5 bg-light">
+  <div class="container text-center">
+    <h1 class="hero-title mb-3">Modern Library Management System</h1>
+    <p class="lead text-secondary mb-4">
+      Efficiently manage books, students, and issues with ease.
+    </p>
+    <a href="/books" class="btn btn-dark btn-lg px-5 shadow">Browse Books</a>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="container my-5">
+  <!-- Dashboard Statistics -->
+  <section class="mb-5">
+    <h2 class="section-title">Dashboard Statistics</h2>
+    <div class="row gy-4">
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <div class="card p-4 text-center">
+          <span class="stat-number" th:text="${totalBooks ?: '0'}">0</span>
+          <span class="stat-label">Total Books</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <div class="card p-4 text-center">
+          <span class="stat-number" th:text="${availableBooks ?: '0'}">0</span>
+          <span class="stat-label">Available Books</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <div class="card p-4 text-center">
+          <span class="stat-number" th:text="${totalStudents ?: '0'}">0</span>
+          <span class="stat-label">Registered Students</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <div class="card p-4 text-center">
+          <span class="stat-number" th:text="${activeIssues ?: '0'}">0</span>
+          <span class="stat-label">Active Issues</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-md-4 col-lg-2">
+        <div class="card p-4 text-center">
+          <span class="stat-number" th:text="${overdueBooks ?: '0'}">0</span>
+          <span class="stat-label">Overdue Books</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section>
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="row gy-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="card quick-action-card p-4 text-center">
+          <h3>Issue Book</h3>
+          <p class="text-muted mb-3">Issue a book to a student</p>
+          <a href="/issues/issue" class="btn btn-dark">Issue Book</a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card quick-action-card p-4 text-center">
+          <h3>Add New Book</h3>
+          <p class="text-muted mb-3">Add a new book to the library</p>
+          <a href="/books/add" class="btn btn-success">Add Book</a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card quick-action-card p-4 text-center">
+          <h3>Register Student</h3>
+          <p class="text-muted mb-3">Register a new student</p>
+          <a href="/students/add" class="btn btn-success">Add Student</a>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="card quick-action-card p-4 text-center">
+          <h3>View All Issues</h3>
+          <p class="text-muted mb-3">Manage book issues and returns</p>
+          <a href="/issues" class="btn btn-warning text-white">View Issues</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Book Issues -->
+  <section class="mt-5" th:if="${recentIssues != null and !recentIssues.empty}">
+    <h2 class="section-title">Recent Book Issues</h2>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Student</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="issue : ${recentIssues}">
+            <td th:text="${issue.book.title}">Book Title</td>
+            <td th:text="${issue.student.name}">Student Name</td>
+            <td th:text="${#temporals.format(issue.issueDate, 'dd-MM-yyyy')}">01-01-2024</td>
+            <td th:text="${#temporals.format(issue.dueDate, 'dd-MM-yyyy')}">15-01-2024</td>
+            <td>
+              <span th:class="'badge ' + 
+                    (${issue.status == T(com.selfwise.model.Issue.IssueStatus).ISSUED} ? 'bg-primary' :
+                    ${issue.status == T(com.selfwise.model.Issue.IssueStatus).RETURNED} ? 'bg-success' : 'bg-danger')"
+                    th:text="${issue.status}">Status</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Overdue Books Alert -->
+  <div class="alert alert-warning mt-5 d-flex align-items-center" role="alert" th:if="${overdueBooks != null and overdueBooks > 0}">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+    <div>
+      <strong>Warning!</strong> There are <span th:text="${overdueBooks}">0</span> overdue books.
+      <a href="/issues?status=OVERDUE" class="btn btn-warning btn-sm ms-3">View Overdue Books</a>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer bg-light">
+  <div class="container">
+    <p>&copy; 2024 SelfWise Library Management System. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Bootstrap 5 JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

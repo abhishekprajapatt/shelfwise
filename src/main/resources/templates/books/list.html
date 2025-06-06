@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Books - SelfWise Library</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background: #fff;
+      color: #6b7280;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .header {
+      padding: 3rem 1rem 2rem;
+      text-align: center;
+      color: #111827;
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.02em;
+    }
+    .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 5px rgb(0 0 0 / 0.1);
+    }
+    .card-header {
+      background: none;
+      border-bottom: none;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #111827;
+      padding: 1.25rem 1.5rem;
+    }
+    .table thead th {
+      border-bottom: 2px solid #e5e7eb;
+      font-weight: 600;
+      color: #374151;
+    }
+    .table tbody tr:hover {
+      background: #f9fafb;
+      transform: translateY(-2px);
+      transition: 0.2s ease;
+      cursor: pointer;
+    }
+    .badge-available {
+      background-color: #d1fae5;
+      color: #065f46;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 0.4em 0.9em;
+      font-size: 0.75rem;
+    }
+    .badge-unavailable {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 0.4em 0.9em;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <header class="header">SelfWise Library - Book Management</header>
+    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <form th:action="@{/books}" method="get" class="d-flex flex-grow-1 gap-2" role="search" aria-label="Search Books">
+        <input
+          type="search"
+          name="search"
+          th:value="${search}"
+          class="form-control"
+          placeholder="Search books by title, author, or ISBN..."
+          aria-label="Search books"
+          required
+          minlength="3"
+        />
+        <button type="submit" class="btn btn-dark">Search</button>
+        <a th:if="${search}" href="/books" class="btn btn-secondary">Clear</a>
+      </form>
+      <a href="/books/add" class="btn btn-success flex-shrink-0">Add New Book</a>
+    </div>
+
+    <div th:if="${books != null and !books.empty}" class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="text-secondary">
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Publication Date</th>
+            <th>Total Copies</th>
+            <th>Available</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="book : ${books}">
+            <td th:text="${book.id}">1</td>
+            <td th:text="${book.title}">Book Title</td>
+            <td th:text="${book.author}">Author Name</td>
+            <td th:text="${book.isbn}">0123456789012</td>
+            <td th:text="${book.publicationDate != null ? #temporals.format(book.publicationDate, 'dd MMM yyyy') : 'N/A'}">01 Jan 2024</td>
+            <td th:text="${book.totalCopies}">5</td>
+            <td th:text="${book.availableCopies}">3</td>
+            <td>
+              <span th:class="${book.availableCopies > 0 ? 'badge-available' : 'badge-unavailable'}"
+                th:text="${book.availableCopies > 0 ? 'Available' : 'Not Available'}"
+              >Available</span>
+            </td>
+            <td class="text-center align-middle">
+              <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-warning btn-sm me-2" aria-label="Edit Book">Edit</a>
+              <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" class="d-inline" 
+                onsubmit="return confirm('Are you sure you want to delete this book?')">
+                <button type="submit" class="btn btn-danger btn-sm" aria-label="Delete Book">Delete</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${books == null or books.empty}" class="text-center py-5 text-secondary fs-5">
+      <p th:if="${search}">No books match your search criteria.</p>
+      <p th:unless="${search}">No books available in the library.</p>
+      <a href="/books/add" class="btn btn-success mt-3">Add First Book</a>
+    </div>
+
+    <section class="mt-5">
+      <div class="row g-4">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card p-4 text-center">
+            <span class="display-5 fw-bold text-dark" th:text="${books != null ? books.size() : 0}">0</span>
+            <p class="text-muted fw-semibold">Total Books</p>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card p-4 text-center">
+            <span class="display-5 fw-bold text-success" th:text="${availableCount ?: 0}">0</span>
+            <p class="text-muted fw-semibold">Available Books</p>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card p-4 text-center">
+            <span class="display-5 fw-bold text-warning" th:text="${issuedCount ?: 0}">0</span>
+            <p class="text-muted fw-semibold">Issued Books</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
