@@ -73,6 +73,7 @@
     </dependencies>
 
     <build>
+    	<finalName>selfwise</finalName>
         <plugins>
             <!-- Spring Boot Maven Plugin for packaging and running -->
             <plugin>
